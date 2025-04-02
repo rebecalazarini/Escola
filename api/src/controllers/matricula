@@ -22,33 +22,44 @@ const read = async (req, res) => {
 
 const readOne = async (req, res) => {
     try {
-        const matricula = await prisma.matricula.findUnique({
+        const turma = await prisma.turma.findUnique({
             select: {
                 id: true,
                 nome: true,
-                turma: true,
-                professor: true,
-                possui: {
+                disciplinas: {
                     select: {
-                        nome: true
+                        nome: true,
+                        professores: {
+                            select: {
+                                id: true,
+                                nome: true
+                            }
+                        },
+                        matriculas: {
+                            select: {
+                                faz: { 
+                                    select: {
+                                        ra: true,
+                                        nome: true
+                                    }
+                                }
+                            }
+                        }
                     }
-                },
-                leciona: {
-                    select: {
-                        nome: true
-                    }
-                },
-                matriculas: true
+                }
             },
             where: {
                 id: Number(req.params.id)
             }
         });
-        return res.json(matricula);
+        return res.json(turma);
     } catch (error) {
         return res.status(400).json({ error: error.message });
     }
-}
+};
+
+
+
 
 const update = async (req, res) => {
     try {
